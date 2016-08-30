@@ -1,5 +1,5 @@
 angular.module('controllersModule')
-    .controller('classifiedCtrl', function ($scope, $http) {
+    .controller('classifiedCtrl', function ($scope, $http ,$mdSidenav , $mdToast ,$mdDialog) {
         $scope.classifieds= [
             {
                 "id":"1",
@@ -107,5 +107,65 @@ angular.module('controllersModule')
                 "views":423
             }
         ];
-        $scope.message = "world";
+
+        var contact = {
+            name : "Irdi Avxhi",
+            phone : "324324343434",
+            email : "irdiavxhi@gmail.com"
+        };
+
+
+        $scope.openSidebar = function(){
+            $mdSidenav('left').toggle();
+        }
+        $scope.closeSideBar = function () {
+            $mdSidenav('left').close();
+        }
+        $scope.saveClassified = function (classified) {
+            if(classified)
+            {
+                classified.contact = contact;
+                $scope.classifieds.push(classified);
+                $scope.classified = {};
+                $scope.closeSideBar();
+                showToast("Classified Saved")
+            }
+        }
+
+        $scope.editClassified = function(classified){
+            $scope.editing  = true;
+            $scope.openSidebar();
+            $scope.classified = classified;
+        }
+        
+        $scope.saveEditedClassified = function () {
+            $scope.editing = false;
+            $scope.classified = {};
+            $scope.closeSideBar();
+            showToast("Edit Saved")
+        }
+
+        $scope.deleteClassified = function(event , classified){
+            var index = $scope.classifieds.indexOf(classified);
+
+           var confirm = $mdDialog
+                                    .confirm()
+                                    .title("Are you sure u want to delete " + classified.title + "?")
+                                    .ok("yes")
+                                    .cancel("No")
+                                    .targetEvent(event);
+            $mdDialog.show(confirm).then(function(){
+                $scope.classifieds.splice(index,1);
+            }, function () {
+                //nqs jo
+            });
+
+        }
+        function showToast(message) {
+            $mdToast.simple()
+                .textContent(message)
+                .position('top', 'right')
+                .hideDelay(3000);
+            $mdToast.show(simpleToast);
+        }
     });
